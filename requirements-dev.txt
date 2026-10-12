@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest
+# FastAPI's TestClient needs it for the socket tests.
+httpx

@@ -1,0 +1,58 @@
+/*
+ * Theme tokens for the Pulp Arena look, from showdown's design system.
+ * Every color, font, border, and shadow in the app reads from this file, so a
+ * new theme changes only these values. Motion settings live in `motion.js`.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Page and table */
+  --felt: #131317;
+  --felt-art: radial-gradient(rgba(253, 228, 0, 0.1) 1.2px, transparent 1.4px) 0 0 / 12px 12px;
+  --panel: #1f1f23;
+  --panel-high: #2a292e;
+  --ink: #ffffff;
+  --muted: #cdc7aa;
+  --line: #000000;
+
+  /* Brand colors */
+  --yellow: #fde400;
+  --red: #c90118;
+  --rose: #ff5a5f;
+  --cyan: #9cf0ff;
+  --paper: #fffdf2;
+
+  /* Cards */
+  /* Short screens, such as a phone held sideways, get smaller cards. */
+  --card-w: clamp(38px, min(6.2vw, 10.5vh), 68px);
+  --card-bg: var(--paper);
+  --card-ink: #131317;
+  --card-red: #c90118;
+  --card-border: 3px solid #000;
+  --card-radius: 4px;
+  --card-shadow: 4px 4px 0 #000;
+  --card-font: "Anton", Impact, sans-serif;
+  --card-back: repeating-linear-gradient(45deg, #c90118 0 8px, #fde400 8px 11px);
+  /* Cards in the Pulp Arena look sit at a slight random angle. */
+  --tilt: 3deg;
+
+  /* Groups */
+  --group-bg: rgba(253, 228, 0, 0.06);
+  --group-border: 3px dashed #fde400;
+  --group-radius: 2px;
+  --ok: #fde400;
+  --bad: #ff3b4f;
+
+  /* Buttons */
+  --btn-bg: #fde400;
+  --btn-ink: #131317;
+  --btn-border: 3px solid #000;
+  --btn-radius: 2px;
+  --btn-shadow: 4px 4px 0 #000;
+  --btn-danger: #c90118;
+
+  /* Type */
+  --display: "Anton", Impact, sans-serif;
+  --headline: "Bebas Neue", "Anton", sans-serif;
+  --ui: "Space Grotesk", system-ui, sans-serif;
+}
