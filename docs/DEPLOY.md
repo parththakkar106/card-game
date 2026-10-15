@@ -1,7 +1,7 @@
 # Deploy
 
 The game runs on one Oracle Cloud free-tier server at
-`https://game.parth.party`. The server can host more apps the same way.
+`https://cards.parth.party`. The server can host more apps the same way.
 
 ## How the pieces fit
 
@@ -47,7 +47,7 @@ Folders on the server:
    `iptables` rules.
 3. Create the shared network: `docker network create web`.
 4. Start Caddy from `/srv/caddy`.
-5. Point the DNS `A` record for `game.parth.party` at the server's public IP.
+5. Point the DNS `A` record for `cards.parth.party` at the server's public IP.
 
 ## Deploy a new version
 
