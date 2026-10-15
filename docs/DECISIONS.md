@@ -89,3 +89,9 @@ game code.
 are in `web/src/theme.css`. Card faces are drawn in code, with no image files.
 
 **D-22. Desktop first, playable on a phone held sideways.**
+
+**D-23. A free board on wide screens, wrapping rows on phones.** On screens
+900 px wide or more, groups sit where each player puts them. A card dropped on
+empty felt starts a group at that spot, and a group moves by its handle. Each
+player arranges their own screen, so positions stay in the browser and never
+reach the server. Narrow screens keep the wrapping row layout.

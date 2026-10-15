@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Card } from "./Card.jsx";
 import { sortHand } from "./cards.js";
+import { layout, useWide } from "./board.js";
 import { play, pop, shake, snapBack } from "./motion.js";
 
 function Seats({ room, game, reactions }) {
@@ -52,6 +53,20 @@ export function Table({ state, send }) {
   const [selected, setSelected] = useState(null);
   const pending = useRef(null);
   const msgRef = useRef(null);
+  const wide = useWide();
+  const boardRef = useRef(null);
+  const pos = useRef({});
+  const newAt = useRef(null);
+
+  // Place groups before the cards animate, so each card flies to its final spot.
+  useLayoutEffect(() => {
+    if (!wide) {
+      boardRef.current.style.removeProperty("--fill");
+      return;
+    }
+    layout(boardRef.current, pos.current, newAt.current);
+    newAt.current = null;
+  }, [game, wide]);
 
   // Animate cards after every change the server sends.
   useLayoutEffect(() => {
@@ -78,6 +93,11 @@ export function Table({ state, send }) {
       return;
     }
     pending.current = el;
+    if (wide && to === "new" && el) {
+      const b = boardRef.current.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      newAt.current = { card, x: Math.max(0, r.left - b.left - 12), y: Math.max(0, r.top - b.top - 12) };
+    }
     send({ type: "move", card, to });
   };
 
@@ -95,6 +115,42 @@ export function Table({ state, send }) {
     setSelected(null);
   };
 
+  // On the free board, a tap on empty felt starts a new group at that spot.
+  const tapBoard = (e) => {
+    if (selected === null || e.target !== e.currentTarget) return;
+    const b = e.currentTarget.getBoundingClientRect();
+    newAt.current = { card: selected, x: Math.max(0, e.clientX - b.left - 30), y: Math.max(0, e.clientY - b.top - 30) };
+    tapZone("new")(e);
+  };
+
+  // Drag a group by its handle. Only this player's screen changes.
+  const moveGroup = (id) => (e) => {
+    e.preventDefault();
+    const el = e.currentTarget.parentElement;
+    const p = pos.current[id];
+    const [sx, sy, ox, oy] = [e.clientX, e.clientY, p.x, p.y];
+    el.classList.add("moving");
+    const onMove = (ev) => {
+      p.x = Math.max(0, ox + ev.clientX - sx);
+      p.y = Math.max(0, oy + ev.clientY - sy);
+      el.style.left = `${p.x}px`;
+      el.style.top = `${p.y}px`;
+    };
+    const onUp = () => {
+      el.classList.remove("moving");
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      layout(boardRef.current, pos.current, null);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
+
+  const tidy = () => {
+    pos.current = {};
+    layout(boardRef.current, pos.current, null);
+  };
+
   const timer = seconds === null ? "∞" : `0:${String(seconds).padStart(2, "0")}`;
   const isHost = room.seats[you]?.host;
 
@@ -107,15 +163,25 @@ export function Table({ state, send }) {
         </div>
       </div>
 
-      <div className="table">
+      <div
+        ref={boardRef}
+        className={`table${wide ? " free" : ""}`}
+        data-drop={wide && mine ? "new" : undefined}
+        onClick={wide && mine ? tapBoard : undefined}
+      >
         {game.table.map((g) => (
-          <div key={g.id} className={`group ${g.valid ? "ok" : "bad"}`} data-drop={mine ? g.id : undefined} onClick={mine ? tapZone(g.id) : undefined}>
+          <div key={g.id} className={`group ${g.valid ? "ok" : "bad"}`} data-gid={g.id} data-drop={mine ? g.id : undefined} onClick={mine ? tapZone(g.id) : undefined}>
+            {wide && (
+              <span className="grip" aria-label="Move this group" onPointerDown={moveGroup(g.id)} onClick={(e) => e.stopPropagation()}>
+                ⠿ Move
+              </span>
+            )}
             {g.cards.map((c) => (
               <Card key={c} id={c} draggable={mine} selected={selected === c} onDrop={onDrop} onTap={onTap} />
             ))}
           </div>
         ))}
-        {mine && (
+        {mine && !wide && (
           <div className="group new" data-drop="new" onClick={tapZone("new")}>
             Drop here to start a new group
           </div>
@@ -131,6 +197,7 @@ export function Table({ state, send }) {
             <button className="btn danger" onClick={() => send({ type: "draw" })}>{game.pile ? "Draw" : "Pass"}</button>
           </>
         )}
+        {wide && game.table.length > 0 && <button className="btn ghost" onClick={tidy}>Tidy board</button>}
         <span ref={msgRef} className={`msg${error ? " err" : ""}`} aria-live="polite">
           {error ? error.message : status(state, mine)}
         </span>
