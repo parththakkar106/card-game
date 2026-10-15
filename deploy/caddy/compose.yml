@@ -1,0 +1,24 @@
+# The shared Caddy proxy. Copy this file to /srv/caddy/compose.yml.
+# Caddy is the only container that publishes ports to the internet.
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates live here. Keep this volume, or Caddy requests new
+      # certificates on each start and can hit Let's Encrypt rate limits.
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [web]
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  web:
+    external: true

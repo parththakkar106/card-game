@@ -35,8 +35,8 @@ Oracle checks the regional names when you create an instance.
 Folders on the server:
 
 ```
-/srv/caddy/compose.yml      Caddy container
-/srv/caddy/Caddyfile        one block per subdomain
+/srv/caddy/compose.yml      copy of deploy/caddy/compose.yml
+/srv/caddy/Caddyfile        copy of deploy/caddy/Caddyfile
 /srv/card-game/compose.yml  copy of deploy/compose.yml
 ```
 
