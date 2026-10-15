@@ -1,0 +1,5 @@
+# One block per site. Copy this file to /srv/caddy/Caddyfile.
+# Caddy gets and renews the HTTPS certificate for each name.
+cards.parth.party {
+	reverse_proxy card-game:8000
+}
