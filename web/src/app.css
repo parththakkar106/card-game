@@ -64,6 +64,14 @@ button, input, select { font: inherit; }
 .group.new { border-style: dashed; border-color: var(--muted); color: var(--muted); font-size: 12px; justify-content: center; text-align: center; width: calc(var(--card-w) * 2.2); cursor: pointer; }
 .target { box-shadow: 0 0 0 4px var(--cyan) !important; }
 
+/* Free board on wide screens. Groups sit where each player puts them, and
+   `board.js` sets their positions. */
+.table.free { display: block; position: relative; min-height: max(340px, var(--fill, 0px)); background: rgba(0, 0, 0, 0.28); border: 3px solid #000; }
+.table.free .group { position: absolute; }
+.table.free .group.moving { z-index: 5; box-shadow: 8px 8px 0 #000; }
+.table.free .empty { position: absolute; inset: 16px; }
+.grip { position: absolute; top: -12px; left: 8px; z-index: 1; font: 700 10px var(--ui); letter-spacing: 0.07em; text-transform: uppercase; background: #000; color: var(--yellow); padding: 2px 6px; cursor: move; touch-action: none; user-select: none; }
+
 .lower { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: end; }
 .pile { display: grid; gap: 6px; justify-items: center; font-size: 12px; color: var(--muted); }
 .empty-pile { background: transparent; border-style: dashed; box-shadow: none; }
