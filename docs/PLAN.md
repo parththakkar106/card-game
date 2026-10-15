@@ -20,7 +20,7 @@ Goal: friends can play a full game in their browsers on one local server.
 
 Goal: the game runs at a public HTTPS address.
 
-- [ ] Add a Dockerfile or a systemd unit that builds `web/` and runs uvicorn.
+- [x] Add a Dockerfile that builds `web/` and runs uvicorn. See [DEPLOY.md](DEPLOY.md).
 - [ ] Set up the Oracle free server with Caddy for HTTPS and WebSockets.
 - [ ] Deploy from `main` on each merge.
 

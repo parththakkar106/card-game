@@ -1,0 +1,12 @@
+# The game on the server. Copy this file to /srv/card-game/compose.yml.
+# Caddy reaches the app by its service name on the shared `web` network, so
+# no port is published to the internet.
+services:
+  card-game:
+    image: ghcr.io/parththakkar106/card-game:latest
+    restart: unless-stopped
+    networks: [web]
+
+networks:
+  web:
+    external: true
