@@ -60,6 +60,18 @@ docker compose up -d
 `pull` downloads the newest image, and `up -d` replaces the running container.
 Players in a game lose their room, because rooms live in memory.
 
+The `Deploy` CI job runs these commands after each push to `main`. It
+connects with a key that `~/.ssh/authorized_keys` on the server limits to one
+command:
+
+```
+command="cd /srv/card-game && docker compose pull -q && docker compose up -d && docker image prune -f",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty ssh-ed25519 AAAA... github-deploy
+```
+
+The job reads three repository secrets: `DEPLOY_SSH_KEY` (the private key),
+`DEPLOY_HOST` (the server IP), and `DEPLOY_KNOWN_HOSTS` (the server's host key
+line, which lets the job detect a different machine at that address).
+
 ## Add another app
 
 1. Publish the app as a container image that listens on one port.
