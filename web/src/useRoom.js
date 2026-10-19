@@ -23,7 +23,9 @@ function reduce(s, msg) {
         if (msg.to === "hand") hand = [...hand, msg.card];
         else if (msg.from === "hand") hand = hand.filter((c) => c !== msg.card);
       }
-      return { ...s, game: { ...g, table, hand, counts: msg.counts }, error: null };
+      // Another player's card from their hand flies in from their seat.
+      const fly = msg.from === "hand" && msg.seat !== s.room.you ? { seat: msg.seat, card: msg.card } : null;
+      return { ...s, game: { ...g, table, hand, counts: msg.counts }, error: null, fly };
     }
     case "table":
       return { ...s, game: { ...g, table: msg.table, counts: msg.counts } };

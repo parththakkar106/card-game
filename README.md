@@ -41,7 +41,8 @@ For front-end work, run `npm run dev` in `web/` as well and open
 http://localhost:5173. Vite reloads the page on each save and passes API and
 socket traffic to the Python server.
 
-`pytest` runs the rules engine and socket tests.
+`pytest` runs the rules engine and socket tests. While the server runs,
+`npm run e2e` in `web/` plays a short two-player game in Chromium.
 
 ## Stack in one line
 

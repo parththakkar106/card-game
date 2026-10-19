@@ -26,11 +26,11 @@ Goal: the game runs at a public HTTPS address.
 
 ## Phase 3: Polish
 
-- [ ] Deal animation from the pile to each hand at game start.
-- [ ] A short flight from a seat badge to the table when another player places
+- [x] Deal animation from the pile to each hand at game start.
+- [x] A short flight from a seat badge to the table when another player places
       a card from their hand.
 - [x] Sound effects, with a mute toggle.
-- [ ] An end-to-end browser test that plays a turn with two players.
+- [x] An end-to-end browser test that plays a turn with two players.
 - [x] A rules sheet that opens over the table.
 
 ## Phase 4: Bots

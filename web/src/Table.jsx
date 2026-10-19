@@ -2,14 +2,14 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Card } from "./Card.jsx";
 import { sortHand } from "./cards.js";
 import { layout, useWide } from "./board.js";
-import { play, pop, shake, snapBack } from "./motion.js";
+import { deal, play, pop, shake, snapBack } from "./motion.js";
 import { isMuted, setMuted, sound } from "./sound.js";
 
 function Seats({ room, game, reactions }) {
   return (
     <div className="seats">
       {room.seats.map((s, i) => (
-        <div key={i} className={`seat${game.turn === i && !game.result ? " turn" : ""}${s.online ? "" : " away"}`}>
+        <div key={i} data-seat={i} className={`seat${game.turn === i && !game.result ? " turn" : ""}${s.online ? "" : " away"}`}>
           <span className="av">{s.name.slice(0, 2).toUpperCase()}</span>
           <span className="who">
             {s.name}
@@ -86,7 +86,7 @@ function savedSort() {
 }
 
 export function Table({ state, send }) {
-  const { room, game, seconds, error, reactions, drew } = state;
+  const { room, game, seconds, error, reactions, drew, fly } = state;
   const you = room.you;
   const mine = you !== null && game.turn === you && !game.result;
   const [selected, setSelected] = useState(null);
@@ -157,9 +157,17 @@ export function Table({ state, send }) {
     newAt.current = null;
   }, [game, wide]);
 
-  // Animate cards after every change the server sends.
+  // Animate cards after every change the server sends. The first render of a
+  // new game deals the hand from the pile instead.
+  const dealt = useRef(false);
   useLayoutEffect(() => {
-    play();
+    const fresh = !dealt.current && game.turn_no === 1 && !game.table.length;
+    dealt.current = true;
+    if (fresh) {
+      deal([...document.querySelectorAll(".hand [data-card]")], document.querySelector(".pile"));
+      return;
+    }
+    play(fly && { card: fly.card, from: document.querySelector(`[data-seat="${fly.seat}"]`) });
   }, [game]);
 
   useEffect(() => {
