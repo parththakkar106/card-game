@@ -32,6 +32,8 @@ function reduce(s, msg) {
     case "turn":
       return {
         ...s,
+        // Keep the drawn card marked until this player's next play.
+        drew: msg.last?.seat === s.room.you && msg.last?.how === "played" ? null : s.drew,
         game: { ...g, table: msg.table, counts: msg.counts, turn: msg.turn, turn_no: msg.turn_no, pile: msg.pile, result: msg.result },
         seconds: msg.seconds,
         error: null,

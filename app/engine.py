@@ -72,6 +72,24 @@ def is_valid(cards: list) -> bool:
     return is_run(cards) or is_set(cards)
 
 
+def problem(cards: list) -> str | None:
+    """Return a short reason the group is not valid, or None if it is.
+
+    The table shows this label under a red group, so the player learns which
+    rule the group breaks.
+    """
+    if is_valid(cards):
+        return None
+    if len(cards) < 3:
+        return "needs 3 cards"
+    ranks = [rank(c) for c in cards]
+    if len(set(ranks)) == 1:
+        return "suit repeats"
+    if len({suit(c) for c in cards}) == 1:
+        return "not in sequence"
+    return "mixed suits" if len(set(ranks)) == len(ranks) else "mixed ranks"
+
+
 def sort_group(cards: list) -> list:
     """Return a group in display order: runs by rank, sets by suit.
 
@@ -178,7 +196,8 @@ def view(state: dict, seat: int | None) -> dict:
 
 
 def public_group(g: dict) -> dict:
-    return {"id": g["id"], "cards": g["cards"], "valid": is_valid(g["cards"])}
+    why = problem(g["cards"])
+    return {"id": g["id"], "cards": g["cards"], "valid": why is None, "why": why}
 
 
 # ---------- Actions ----------

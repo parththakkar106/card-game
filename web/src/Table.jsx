@@ -46,8 +46,18 @@ function status(state, mine) {
   return `${before}${name(game.turn)} is playing.`;
 }
 
+const clock = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+function savedSort() {
+  try {
+    return localStorage.getItem("sort") ?? "suit";
+  } catch {
+    return "suit";
+  }
+}
+
 export function Table({ state, send }) {
-  const { room, game, seconds, error, reactions } = state;
+  const { room, game, seconds, error, reactions, drew } = state;
   const you = room.you;
   const mine = you !== null && game.turn === you && !game.result;
   const [selected, setSelected] = useState(null);
@@ -57,6 +67,26 @@ export function Table({ state, send }) {
   const boardRef = useRef(null);
   const pos = useRef({});
   const newAt = useRef(null);
+  const [sortBy, setSortBy] = useState(savedSort);
+
+  const changeSort = (by) => {
+    setSortBy(by);
+    try {
+      localStorage.setItem("sort", by);
+    } catch {
+      // Private windows can block storage. The choice still applies until reload.
+    }
+  };
+
+  // Show the turn in the tab title, so a player in another tab sees it.
+  useEffect(() => {
+    if (!mine) return;
+    const before = document.title;
+    document.title = "▶ Your turn · Card Game";
+    return () => {
+      document.title = before;
+    };
+  }, [mine]);
 
   // Place groups before the cards animate, so each card flies to its final spot.
   useLayoutEffect(() => {
@@ -151,7 +181,7 @@ export function Table({ state, send }) {
     layout(boardRef.current, pos.current, null);
   };
 
-  const timer = seconds === null ? "∞" : `0:${String(seconds).padStart(2, "0")}`;
+  const timer = seconds === null ? "∞" : clock(seconds);
   const isHost = room.seats[you]?.host;
 
   return (
@@ -170,7 +200,7 @@ export function Table({ state, send }) {
         onClick={wide && mine ? tapBoard : undefined}
       >
         {game.table.map((g) => (
-          <div key={g.id} className={`group ${g.valid ? "ok" : "bad"}`} data-gid={g.id} data-drop={mine ? g.id : undefined} onClick={mine ? tapZone(g.id) : undefined}>
+          <div key={g.id} className={`group ${g.valid ? "ok" : "bad"}`} data-why={g.why ?? undefined} data-gid={g.id} data-drop={mine ? g.id : undefined} onClick={mine ? tapZone(g.id) : undefined}>
             {wide && (
               <span className="grip" aria-label="Move this group" onPointerDown={moveGroup(g.id)} onClick={(e) => e.stopPropagation()}>
                 ⠿ Move
@@ -209,10 +239,20 @@ export function Table({ state, send }) {
           <span>{game.pile} left</span>
         </div>
         {game.hand ? (
-          <div className="hand" data-drop={mine ? "hand" : undefined} onClick={mine ? tapZone("hand") : undefined} aria-label="Your hand">
-            {sortHand(game.hand).map((c) => (
-              <Card key={c} id={c} draggable={mine} selected={selected === c} onDrop={onDrop} onTap={onTap} />
-            ))}
+          <div className="hand-wrap">
+            <div className="sort" role="group" aria-label="Sort your hand">
+              <span>Sort by</span>
+              {["suit", "rank"].map((by) => (
+                <button key={by} className={sortBy === by ? "on" : ""} aria-pressed={sortBy === by} onClick={() => changeSort(by)}>
+                  {by === "suit" ? "Suit" : "Number"}
+                </button>
+              ))}
+            </div>
+            <div className="hand" data-drop={mine ? "hand" : undefined} onClick={mine ? tapZone("hand") : undefined} aria-label="Your hand">
+              {sortHand(game.hand, sortBy).map((c) => (
+                <Card key={c} id={c} draggable={mine} selected={selected === c} fresh={c === drew} onDrop={onDrop} onTap={onTap} />
+              ))}
+            </div>
           </div>
         ) : (
           <div className="hand watching">You are watching this game.</div>

@@ -74,7 +74,7 @@ a free seat. Anyone else watches.
 | --- | --- | --- |
 | `snapshot` | One connection, on join and at game start | `room`, `game` (that seat's view), `seconds` |
 | `room` | Everyone, on lobby or seat changes | `phase`, `settings`, `seats`, `you` |
-| `moved` | Everyone | `seat`, `card`, `from`, `to`, `groups` (changed groups with `valid`), `removed`, `counts` |
+| `moved` | Everyone | `seat`, `card`, `from`, `to`, `groups` (changed groups with `valid` and `why`), `removed`, `counts` |
 | `table` | Everyone, after a reset | `table`, `counts` |
 | `hand` | The acting seat only | `hand`, `drew` |
 | `turn` | Everyone, when a turn ends | `turn`, `table`, `counts`, `pile`, `seconds`, `last`, `result` |
