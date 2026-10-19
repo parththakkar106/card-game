@@ -23,15 +23,20 @@ function reduce(s, msg) {
         if (msg.to === "hand") hand = [...hand, msg.card];
         else if (msg.from === "hand") hand = hand.filter((c) => c !== msg.card);
       }
-      return { ...s, game: { ...g, table, hand, counts: msg.counts }, error: null };
+      // Another player's card from their hand flies in from their seat.
+      const fly = msg.from === "hand" && msg.seat !== s.room.you ? { seat: msg.seat, card: msg.card } : null;
+      return { ...s, game: { ...g, table, hand, counts: msg.counts }, error: null, fly };
     }
     case "table":
       return { ...s, game: { ...g, table: msg.table, counts: msg.counts } };
     case "hand":
-      return { ...s, game: { ...g, hand: msg.hand }, drew: msg.drew };
+      // A reset or undo sends no drawn card, so keep the earlier mark.
+      return { ...s, game: { ...g, hand: msg.hand }, drew: msg.drew ?? s.drew };
     case "turn":
       return {
         ...s,
+        // Keep the drawn card marked until this player's next play.
+        drew: msg.last?.seat === s.room.you && msg.last?.how === "played" ? null : s.drew,
         game: { ...g, table: msg.table, counts: msg.counts, turn: msg.turn, turn_no: msg.turn_no, pile: msg.pile, result: msg.result },
         seconds: msg.seconds,
         error: null,

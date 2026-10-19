@@ -5,7 +5,7 @@ import { makeDraggable } from "./motion.js";
 // A small stable angle per card id, so a card keeps its tilt as it moves.
 const tiltOf = (id) => ((id * 7) % 5) - 2;
 
-export function Card({ id, down = false, draggable = false, selected = false, onDrop, onTap }) {
+export function Card({ id, down = false, draggable = false, selected = false, fresh = false, onDrop, onTap }) {
   const ref = useRef(null);
   // Draggable keeps the handlers it was created with, so read the latest
   // props through a ref.
@@ -25,7 +25,7 @@ export function Card({ id, down = false, draggable = false, selected = false, on
   return (
     <div
       ref={ref}
-      className={`card${f.red ? " red" : ""}${draggable ? " grab" : ""}${selected ? " sel" : ""}`}
+      className={`card${f.red ? " red" : ""}${draggable ? " grab" : ""}${selected ? " sel" : ""}${fresh ? " fresh" : ""}`}
       data-flip-id={`c${id}`}
       data-card={id}
       style={{ "--k": tiltOf(id) }}

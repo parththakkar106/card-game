@@ -10,7 +10,9 @@ export function face(id) {
   return { rank: RANKS[r], suit: SUITS[s], red: s === 1 || s === 2, label: `${RANKS[r]} of ${NAMES[s]}`, order: s * 13 + r };
 }
 
-// The hand shows suits together, then ranks in order.
-export function sortHand(hand) {
-  return [...hand].sort((a, b) => face(a).order - face(b).order || a - b);
+// Sort by suit groups each suit in rank order. Sort by rank puts equal ranks
+// side by side, which helps you spot sets.
+export function sortHand(hand, by = "suit") {
+  const key = (id) => (by === "rank" ? (id % 13) * 4 + Math.floor((id % 52) / 13) : face(id).order);
+  return [...hand].sort((a, b) => key(a) - key(b) || a - b);
 }

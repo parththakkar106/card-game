@@ -175,7 +175,7 @@ def handle(room: dict, gid: str, msg: dict, now: float) -> list:
             if room["phase"] != "over":
                 raise engine.Illegal("The game is still going.")
             return _rematch(room)
-        if room["phase"] == "playing" and kind in ("move", "reset", "end_turn", "draw"):
+        if room["phase"] == "playing" and kind in ("move", "undo", "reset", "end_turn", "draw"):
             return _act(room, i, msg, now)
         raise engine.Illegal("That isn't possible right now.")
     except engine.Illegal as e:
@@ -267,9 +267,10 @@ def _publish(room: dict, event: dict, now: float) -> list:
         return [("all", {"type": "moved", **payload, "counts": engine.counts(game)})]
     if kind == "reset":
         seat = event["seat"]
-        return [(("seat", seat), {"type": "hand", "hand": game["hands"][seat], "drew": None}),
+        table, hand = engine.current(game)
+        return [(("seat", seat), {"type": "hand", "hand": list(hand), "drew": None}),
                 ("all", {"type": "table", "counts": engine.counts(game),
-                         "table": [engine.public_group(g) for g in game["table"]]})]
+                         "table": [engine.public_group(g) for g in table]})]
     # The turn ended by a play, a draw, a pass, or a timeout.
     seat = event["seat"]
     out = []

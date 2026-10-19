@@ -72,6 +72,24 @@ def is_valid(cards: list) -> bool:
     return is_run(cards) or is_set(cards)
 
 
+def problem(cards: list) -> str | None:
+    """Return a short reason the group is not valid, or None if it is.
+
+    The table shows this label under a red group, so the player learns which
+    rule the group breaks.
+    """
+    if is_valid(cards):
+        return None
+    if len(cards) < 3:
+        return "needs 3 cards"
+    ranks = [rank(c) for c in cards]
+    if len(set(ranks)) == 1:
+        return "suit repeats"
+    if len({suit(c) for c in cards}) == 1:
+        return "not in sequence"
+    return "mixed suits" if len(set(ranks)) == len(ranks) else "mixed ranks"
+
+
 def sort_group(cards: list) -> list:
     """Return a group in display order: runs by rank, sets by suit.
 
@@ -138,8 +156,9 @@ def new_game(settings: dict, players: int, seed: int) -> dict:
 
 def _work(state: dict) -> dict:
     if state["work"] is None:
+        # `undo` holds the table and hand from before each move this turn.
         state["work"] = {"table": copy.deepcopy(state["table"]),
-                         "hand": list(state["hands"][state["turn"]])}
+                         "hand": list(state["hands"][state["turn"]]), "undo": []}
     return state["work"]
 
 
@@ -178,7 +197,8 @@ def view(state: dict, seat: int | None) -> dict:
 
 
 def public_group(g: dict) -> dict:
-    return {"id": g["id"], "cards": g["cards"], "valid": is_valid(g["cards"])}
+    why = problem(g["cards"])
+    return {"id": g["id"], "cards": g["cards"], "valid": why is None, "why": why}
 
 
 # ---------- Actions ----------
@@ -194,7 +214,7 @@ def apply(state: dict, seat: int, action: dict) -> tuple:
         raise Illegal("The game is over.")
     if seat != state["turn"]:
         raise Illegal("It's not your turn.")
-    handler = {"move": _move, "reset": _reset, "end_turn": _end_turn,
+    handler = {"move": _move, "undo": _undo, "reset": _reset, "end_turn": _end_turn,
                "draw": _draw, "timeout": _draw}.get(action.get("type"))
     if handler is None:
         raise Illegal("Unknown action.")
@@ -206,6 +226,7 @@ def apply(state: dict, seat: int, action: dict) -> tuple:
 def _move(state: dict, seat: int, action: dict) -> dict:
     card, to = action.get("card"), action.get("to")
     w = _work(state)
+    w["undo"].append((copy.deepcopy(w["table"]), list(w["hand"])))
     if card in w["hand"]:
         source = "hand"
     else:
@@ -239,6 +260,15 @@ def _move(state: dict, seat: int, action: dict) -> dict:
     changed = [public_group(g) for g in w["table"] if g["id"] in (source, to)]
     return {"type": "moved", "seat": seat, "card": card, "from": source, "to": to,
             "groups": changed, "removed": removed}
+
+
+def _undo(state: dict, seat: int, action: dict) -> dict:
+    # Undo reaches players the same way as a reset: a new hand and table.
+    w = state["work"]
+    if not w or not w["undo"]:
+        raise Illegal("There is nothing to undo.")
+    w["table"], w["hand"] = w["undo"].pop()
+    return {"type": "reset", "seat": seat}
 
 
 def _reset(state: dict, seat: int, action: dict) -> dict:

@@ -24,8 +24,27 @@ export function capture() {
   saved = Flip.getState(CARDS);
 }
 
-// Animate every card from its recorded place to its new place.
-export function play() {
+// Start a tween from another element's position, so the card appears to fly
+// from there to its slot.
+function flyFrom(card, from, delay = 0) {
+  const a = from.getBoundingClientRect();
+  const b = card.getBoundingClientRect();
+  gsap.from(card, {
+    x: a.left + a.width / 2 - (b.left + b.width / 2),
+    y: a.top + a.height / 2 - (b.top + b.height / 2),
+    rotation: -25,
+    scale: 0.5,
+    opacity: 0,
+    duration: settings.duration,
+    ease: "power2.out",
+    delay,
+  });
+}
+
+// Animate every card from its recorded place to its new place. When `fly`
+// names a card and an element, that card enters from the element, such as a
+// card another player places from their hand.
+export function play(fly = null) {
   if (!saved) return;
   const state = saved;
   saved = null;
@@ -38,9 +57,20 @@ export function play() {
     duration: settings.duration,
     ease: settings.ease,
     nested: true,
-    onEnter: (els) =>
-      gsap.fromTo(els, { opacity: 0, scale: 0.6, y: -30 }, { opacity: 1, scale: 1, y: 0, duration: settings.duration, ease: settings.ease, stagger: settings.enterStagger }),
+    onEnter: (els) => {
+      const flown = fly?.from && els.find((el) => el.dataset.card === String(fly.card));
+      if (flown) flyFrom(flown, fly.from);
+      const rest = els.filter((el) => el !== flown);
+      if (rest.length) gsap.fromTo(rest, { opacity: 0, scale: 0.6, y: -30 }, { opacity: 1, scale: 1, y: 0, duration: settings.duration, ease: settings.ease, stagger: settings.enterStagger });
+    },
   });
+}
+
+// Deal the hand from the draw pile, one card after another.
+export function deal(cards, pile) {
+  saved = null;
+  if (reduce() || !pile) return;
+  cards.forEach((card, i) => flyFrom(card, pile, i * 0.06));
 }
 
 // Send a card back to its slot after a refused or empty drop.
