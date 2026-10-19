@@ -33,7 +33,8 @@ the turn:
 3. If the table was empty when your turn started, every group is a run.
 
 If any check fails, the server keeps your turn going and tells you why.
-**Reset** puts the table and your hand back to the start of your turn.
+**Undo** takes back your last move. **Reset** puts the table and your hand
+back to the start of your turn.
 
 **Draw.** You take the top card of the pile, and your turn ends. Any cards you
 moved go back where they were. If the pile is empty, the button reads **Pass**

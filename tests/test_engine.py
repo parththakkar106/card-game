@@ -174,3 +174,16 @@ def test_reset_restores_the_turn_start():
     state = play(state, 0, move(hand[0], "new"), {"type": "reset"})
     v = engine.view(state, 0)
     assert v["table"] == [] and v["hand"] == hand + [card(1, C)]
+
+
+def test_undo_reverts_one_move_at_a_time():
+    hand = [card(4, H), card(5, H), card(6, H)]
+    state = game([hand + [card(1, C)], [card(2, C)]])
+    state = play(state, 0, move(hand[0], "new"), move(hand[1], 1), {"type": "undo"})
+    v = engine.view(state, 0)
+    assert [g["cards"] for g in v["table"]] == [[hand[0]]]
+    assert v["hand"] == hand[1:] + [card(1, C)]
+    state = play(state, 0, {"type": "undo"})
+    assert engine.view(state, 0)["table"] == []
+    with pytest.raises(Illegal, match="nothing to undo"):
+        engine.apply(state, 0, {"type": "undo"})

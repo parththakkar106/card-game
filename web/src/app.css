@@ -51,6 +51,16 @@ button, input, select { font: inherit; }
 .seat .av { width: 26px; height: 26px; display: grid; place-items: center; background: var(--cyan); color: #000; font-weight: 700; font-size: 12px; }
 .seat .n { color: var(--yellow); font-variant-numeric: tabular-nums; font-weight: 700; }
 .burst { position: absolute; top: -22px; right: -10px; font-size: 28px; pointer-events: none; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.tool { font: 700 11px var(--ui); letter-spacing: 0.06em; text-transform: uppercase; background: #000; color: var(--yellow); border: 2px solid var(--yellow); padding: 4px 8px; cursor: pointer; }
+.tool:hover { border-color: var(--cyan); }
+.rules { max-width: 520px; background: var(--panel); color: var(--ink); border: 3px solid var(--line); box-shadow: 6px 6px 0 var(--yellow); padding: 20px; }
+.rules::backdrop { background: rgba(19, 19, 23, 0.8); }
+.rules h2 { margin: 0 0 8px; font: 400 32px/1 var(--headline); letter-spacing: 0.04em; }
+.rules h3 { margin: 14px 0 4px; font: 400 20px/1 var(--headline); letter-spacing: 0.04em; color: var(--yellow); }
+.rules ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.rules p { margin: 4px 0; }
+.rules form { margin-top: 14px; }
 .timer { font: 400 24px/1 var(--display); padding: 6px 12px; background: var(--yellow); color: #000; border: 3px solid #000; box-shadow: 3px 3px 0 #000; font-variant-numeric: tabular-nums; }
 .timer.low { background: var(--red); color: #fff; }
 

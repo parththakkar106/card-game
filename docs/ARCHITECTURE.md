@@ -63,7 +63,7 @@ a free seat. Anyone else watches.
 | `settings` | `decks`, `hand`, `timer` | Host, in the lobby |
 | `start` | | Host, in the lobby |
 | `move` | `card`, `to` (group id, `"new"`, or `"hand"`) | Current player |
-| `reset`, `end_turn`, `draw` | | Current player |
+| `undo`, `reset`, `end_turn`, `draw` | | Current player |
 | `react` | `emoji` | Any seat |
 | `rematch` | | Host, after the game |
 | `ping` | | Anyone, every 20 s |
@@ -75,7 +75,7 @@ a free seat. Anyone else watches.
 | `snapshot` | One connection, on join and at game start | `room`, `game` (that seat's view), `seconds` |
 | `room` | Everyone, on lobby or seat changes | `phase`, `settings`, `seats`, `you` |
 | `moved` | Everyone | `seat`, `card`, `from`, `to`, `groups` (changed groups with `valid` and `why`), `removed`, `counts` |
-| `table` | Everyone, after a reset | `table`, `counts` |
+| `table` | Everyone, after an undo or reset | `table`, `counts` |
 | `hand` | The acting seat only | `hand`, `drew` |
 | `turn` | Everyone, when a turn ends | `turn`, `table`, `counts`, `pile`, `seconds`, `last`, `result` |
 | `react` | Everyone | `seat`, `emoji` |

@@ -29,9 +29,9 @@ Goal: the game runs at a public HTTPS address.
 - [ ] Deal animation from the pile to each hand at game start.
 - [ ] A short flight from a seat badge to the table when another player places
       a card from their hand.
-- [ ] Sound effects, with a mute toggle.
+- [x] Sound effects, with a mute toggle.
 - [ ] An end-to-end browser test that plays a turn with two players.
-- [ ] A rules page with screenshots.
+- [x] A rules sheet that opens over the table.
 
 ## Phase 4: Bots
 

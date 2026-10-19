@@ -28,7 +28,8 @@ function reduce(s, msg) {
     case "table":
       return { ...s, game: { ...g, table: msg.table, counts: msg.counts } };
     case "hand":
-      return { ...s, game: { ...g, hand: msg.hand }, drew: msg.drew };
+      // A reset or undo sends no drawn card, so keep the earlier mark.
+      return { ...s, game: { ...g, hand: msg.hand }, drew: msg.drew ?? s.drew };
     case "turn":
       return {
         ...s,
